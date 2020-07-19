@@ -49,7 +49,7 @@ int callback_function(int message,void* message_data, void* user_data)
         YR_RULE *rule = (YR_RULE*)message_data;
         fprintf(stderr,"\033[1;31m");
         fprintf(stderr,">>> Matched %s!\n",rule->identifier);
-        fprintf(stderr,"\033[0m;");
+        fprintf(stderr,"\033[0m");
     }
     return CALLBACK_CONTINUE;
 }
@@ -140,12 +140,13 @@ int do_trace(pid_t child) {
         // wait for a syscall and identifies which one
         if (wait_for_syscall(child) != 0) break;
         syscall = ptrace(PTRACE_PEEKUSER, child, sizeof(long)*ORIG_RAX);
-        fprintf(stderr, "syscall(%s) = ", syscallArray[syscall]);
+        int ident = 25 - strlen(syscallArray[syscall]);
+        fprintf(stderr, "syscall(%s)%*s", syscallArray[syscall], ident," = ");
        
         // executes it and get return value
         if (wait_for_syscall(child) != 0) break;
         retval = ptrace(PTRACE_PEEKUSER, child, sizeof(long)*RAX);
-        fprintf(stderr, "%d\n", retval);
+        fprintf(stderr, "%#x\n", retval);
 
         ptrace(PTRACE_GETREGS, child, NULL, &regs);
         // only monitoring the write syscall in this PoC 
