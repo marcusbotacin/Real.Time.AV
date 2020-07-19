@@ -14,6 +14,7 @@
 #include <errno.h>
 #include <string.h>
 #include <yara.h>
+#include"syscalls.h"
 
 // some definitions
 #define WRITE_SYSCALL_NUMBER 1
@@ -24,22 +25,6 @@
 int do_child(int argc, char **argv);
 int do_trace(pid_t child);
 int wait_for_syscall(pid_t child);
-
-// Lets read syscall names from a file. Any better idea?
-char* syscallArray[333];
-void syscallName(void){
-  FILE* fp;
-  fp = fopen("syscall-names.txt","r");
-  char syscall[30];
-  int i = 0,j = 0;
-  for(i = 0;i<333;i++){
-    fscanf(fp, "%s",syscall);
-    char* syscallmalloc = malloc(sizeof(char)*30);
-    strcpy(syscallmalloc,syscall);
-    syscallArray[j++] = syscallmalloc;
-  }
-  fclose(fp);
-}
 
 // YARA callback for matching rules
 int callback_function(int message,void* message_data, void* user_data)
@@ -93,7 +78,7 @@ int main(int argc, char **argv) {
     }
 
     fprintf(stderr, "Starting Tracing\n");
-    syscallName();
+    //syscallName();
 
     // then trace process
     pid_t child = fork();
@@ -140,8 +125,8 @@ int do_trace(pid_t child) {
         // wait for a syscall and identifies which one
         if (wait_for_syscall(child) != 0) break;
         syscall = ptrace(PTRACE_PEEKUSER, child, sizeof(long)*ORIG_RAX);
-        int ident = 25 - strlen(syscallArray[syscall]);
-        fprintf(stderr, "syscall(%s)%*s", syscallArray[syscall], ident," = ");
+        int ident = 25 - strlen(syscalls[syscall]);
+        fprintf(stderr, "syscall(%s)%*s", syscalls[syscall], ident," = ");
        
         // executes it and get return value
         if (wait_for_syscall(child) != 0) break;

@@ -5,7 +5,7 @@ test: dropper strace
 	cat dropper.yar
 	sleep 3
 	./mini dropper.yar ./dropper
-dropper: dropper.c
+dropper: dropper.c 
 	gcc dropper.c -o dropper
-strace: ministrace.c
-	gcc ministrace.c -o mini -lyara
+strace: ministrace.c syscalls.h
+	gcc ministrace.c syscalls.h -o mini -lyara
