@@ -16,16 +16,6 @@
 #include <yara.h>
 #include"syscalls.h"
 
-// some definitions
-#define WRITE_SYSCALL_NUMBER 1
-#define FEW_BYTES 10
-#define BUFFER_REG regs.rbp
-
-// Prototypes
-int do_child(int argc, char **argv);
-int do_trace(pid_t child);
-int wait_for_syscall(pid_t child);
-
 // YARA callback for matching rules
 int callback_function(int message,void* message_data, void* user_data)
 {
@@ -150,17 +140,4 @@ int do_trace(pid_t child) {
         }
     }
     return 0;
-}
-
-// Just wait until a syscall happens
-int wait_for_syscall(pid_t child) {
-    int status;
-    while (1) {
-        ptrace(PTRACE_SYSCALL, child, 0, 0);
-        waitpid(child, &status, 0);
-        if (WIFSTOPPED(status) && WSTOPSIG(status) & 0x80)
-            return 0;
-        if (WIFEXITED(status))
-            return 1;
-    }
 }
