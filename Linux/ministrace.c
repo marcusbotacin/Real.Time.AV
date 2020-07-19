@@ -68,7 +68,6 @@ int main(int argc, char **argv) {
     }
 
     fprintf(stderr, "Starting Tracing\n");
-    //syscallName();
 
     // then trace process
     pid_t child = fork();
@@ -92,17 +91,6 @@ int main(int argc, char **argv) {
 
     return ret;
  }
-
-// Just create a child process that will be traced since its launch
-int do_child(int argc, char **argv) {
-    char *args [argc+1];
-    memcpy(args, argv, argc * sizeof(char*));
-    args[argc] = NULL;
-
-    ptrace(PTRACE_TRACEME);
-    kill(getpid(), SIGSTOP);
-    return execvp(args[0], args);
-}
 
 // Monitoring code itself
 int do_trace(pid_t child) {
