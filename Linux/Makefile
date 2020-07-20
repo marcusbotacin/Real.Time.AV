@@ -7,5 +7,5 @@ test: dropper strace
 	./mini dropper.yar ./dropper
 dropper: dropper.c 
 	gcc dropper.c -o dropper
-strace: ministrace.c syscalls.h helpers.c
-	gcc ministrace.c syscalls.h helpers.c -o mini -lyara
+strace: ministrace.c syscalls.h helpers.c yarah.h yara.c
+	gcc ministrace.c syscalls.h helpers.c yarah.h yara.c -o mini -lyara
