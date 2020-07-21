@@ -1,0 +1,27 @@
+write:
+    dropper (OK)
+open:
+    /proc
+    /hosts
+access:
+access("/bin/chmod"
+      4 access("/bin/rm"
+      4 access("/bin/su"
+      4 access("/usr/bin/apt-get"
+      4 access("/usr/bin/clear"
+      4 access("/usr/bin/wget"
+3 chdir("/")                              = 0
+stat("/etc/apt/apt.conf.d/"
+      2  stat("/etc/apt/sources.list.d/"
+      2 stat("/home/malware"
+      2 stat("/usr"
+open("/etc/cron.hourly/.0"
+      2  open("/etc/resolv.conf"
+execve("/bin/chmod"
+      1  execve("/bin/rm"
+      1  execve("/bin/su"
+      1  execve("/usr/bin/apt-get"
+      1  execve("/usr/bin/dpkg"
+      1  execve("/usr/bin/wget"
+
+

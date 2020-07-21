@@ -1,9 +1,14 @@
 #include <sys/types.h>
+#include<yara.h>
 
 // some definitions
 #define WRITE_SYSCALL_NUMBER 1
 #define FEW_BYTES 10
 #define BUFFER_REG regs.rbp
+
+// Global vars (ok, these should be arguments but...)
+YR_COMPILER *cc;
+YR_RULES *rule;
 
 // Prototypes
 int do_child(int argc, char **argv);

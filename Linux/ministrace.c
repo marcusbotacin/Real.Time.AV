@@ -17,10 +17,6 @@
 #include"syscalls.h"
 #include"yarah.h"
 
-// Global vars (ok, these should be arguments but...)
-YR_COMPILER *cc;
-YR_RULES *rule;
-
 int main(int argc, char **argv) {
     int ret;
 
@@ -79,41 +75,3 @@ int main(int argc, char **argv) {
 
     return ret;
  }
-
-// Monitoring code itself
-int do_trace(pid_t child) {
-    int status, syscall, retval;
-    struct user_regs_struct regs;
-    waitpid(child, &status, 0);
-    ptrace(PTRACE_SETOPTIONS, child, 0, PTRACE_O_TRACESYSGOOD);
-    while(1) {
-
-        // wait for a syscall and identifies which one
-        if (wait_for_syscall(child) != 0) break;
-        syscall = ptrace(PTRACE_PEEKUSER, child, sizeof(long)*ORIG_RAX);
-        int ident = 25 - strlen(syscalls[syscall]);
-        fprintf(stderr, "syscall(%s)%*s", syscalls[syscall], ident," = ");
-       
-        // executes it and get return value
-        if (wait_for_syscall(child) != 0) break;
-        retval = ptrace(PTRACE_PEEKUSER, child, sizeof(long)*RAX);
-        fprintf(stderr, "%#x\n", retval);
-
-        ptrace(PTRACE_GETREGS, child, NULL, &regs);
-        // only monitoring the write syscall in this PoC 
-        if (syscall == WRITE_SYSCALL_NUMBER)
-        {
-            // need to get buffer argument to inspect
-            long p = ptrace(PTRACE_PEEKDATA, child, BUFFER_REG, NULL);
-            char buffer[FEW_BYTES];
-            // only a few bytes inspected, since we want to check its start only
-            memcpy(buffer,&p,FEW_BYTES);
-            // YARA match
-            if(yr_rules_scan_mem(rule,buffer,FEW_BYTES,0,&callback_function,NULL,0)!=ERROR_SUCCESS)
-            {
-                fprintf(stderr,"yara scan failed\n");
-            }
-        }
-    }
-    return 0;
-}

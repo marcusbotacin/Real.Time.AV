@@ -2,3 +2,4 @@ mini
 dropper
 payload.bin
 *.swp
+.gdb_history
