@@ -4,5 +4,6 @@ Additional Material for the Real Time AV paper.
 
 ## Repository
 
-* *Linux*: strace version.
+* *Linux*: *strace* version.
 * *Windows*: Windows callback version.
+* *Pipe*: Shared-Memory Implementation.
